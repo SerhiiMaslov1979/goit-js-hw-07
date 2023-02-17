@@ -1,18 +1,6 @@
 import { galleryItems } from "./gallery-items.js";
 // Change code below this line
 
-// Створи галерею з можливістю кліку по її елементах і перегляду повнорозмірного зображення
-//  у модальному вікні. Подивися демо відео роботи галереї.
-
-// 1. Створення і рендер розмітки на підставі масиву даних galleryItems і наданого
-//  шаблону елемента галереї.
-// 2. Реалізація делегування на div.gallery і отримання url великого зображення.
-// 3. Підключення скрипту і стилів бібліотеки модального вікна basicLightbox.
-// Використовуй CDN сервіс jsdelivr і додай у проект посилання на мініфіковані(.min) файли бібліотеки.
-// 4. Відкриття модального вікна по кліку на елементі галереї. Для цього ознайомся з документацією і прикладами.
-// 5. Заміна значення атрибута src елемента <img> в модальному вікні перед відкриттям.
-// Використовуй готову розмітку модального вікна із зображенням з прикладів бібліотеки basicLightbox.
-
 const gallery = document.querySelector(".gallery");
 
 const items = [];
@@ -41,5 +29,37 @@ galleryItems.forEach((element) => {
 });
 
 gallery.append(...items);
+// _____________________________________________________________________
 
-// console.log(galleryItems);
+document.addEventListener("click", (element) => {
+  element.preventDefault();
+
+  if (element.target.nodeName !== "IMG") {
+    return;
+  }
+
+  const imgSelected = element.target.getAttribute("data-source");
+
+  const template = basicLightbox.create(
+    `
+    <img src="${imgSelected}" width="800" height="600">
+    `,
+
+    {
+      onShow: () => {
+        document.addEventListener("keydown", closeModal);
+      },
+      onClose: () => {
+        document.removeEventListener("keydown", closeModal);
+      },
+    }
+  );
+
+  template.show();
+
+  function closeModal(element) {
+    if (element.key === "Escape") {
+      template.close();
+    }
+  }
+});
